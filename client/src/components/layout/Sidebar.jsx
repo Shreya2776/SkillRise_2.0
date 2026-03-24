@@ -14,14 +14,14 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Command
+  Command,
+  X
 } from "lucide-react";
-import { cn } from "../../services/utils";
 
-const user = JSON.parse(localStorage.getItem("user") || "{}");
-const username = user?.name || "User";
+// Optimized utility for conditional classes
+const cn = (...classes) => classes.filter(Boolean).join(" ");
 
-const Sidebar = ({ isCollapsed, toggleSidebar }) => {
+const Sidebar = ({ isCollapsed, toggleSidebar, isMobile = false }) => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Sparkles, label: "AI Recommendations", path: "/recommendations" },
@@ -35,10 +35,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
   return (
     <aside
-      className={cn(
-        "h-full bg-[#0a0a0f] border border-white/[0.06] rounded-[24px] flex flex-col relative transition-all duration-300",
-        isCollapsed ? "w-[84px]" : "w-[260px]"
-      )}
+      className={`h-full bg-[#0a0a0f] border border-white/[0.06] rounded-[24px] flex flex-col relative transition-all duration-300 w-full`}
     >
       {/* Collapse Button */}
       <button

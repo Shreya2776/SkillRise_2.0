@@ -61,8 +61,8 @@ const ResumeAnalyzer = () => {
       
       {/* SUCCESS TOAST NOTIFICATION */}
       {showModal && (
-        <div className="fixed bottom-10 right-10 z-[100] flex items-center justify-center p-4 animate-in slide-in-from-right-12 duration-500">
-           <div className="w-full max-w-sm bg-[#0a101f] border border-white/10 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden space-y-6">
+        <div className="fixed bottom-6 right-6 left-6 md:left-auto md:bottom-10 md:right-10 z-[100] flex items-center justify-center p-0 animate-in slide-in-from-bottom-12 md:slide-in-from-right-12 duration-500">
+           <div className="w-full max-w-sm bg-[#0a101f] border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-2xl relative overflow-hidden space-y-6">
               <div className="absolute -top-10 -right-10 w-24 h-24 bg-purple-600/20 blur-[40px]" />
               
               <button 
@@ -72,30 +72,30 @@ const ResumeAnalyzer = () => {
                 <X size={16} />
               </button>
 
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
-                   <Rocket size={24} className="animate-bounce" />
+              <div className="flex items-center gap-4 md:gap-5">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                   <Rocket size={20} className="animate-bounce md:w-6 md:h-6" />
                 </div>
                 
                 <div className="space-y-1">
-                   <h3 className="text-xl font-black tracking-tight text-white uppercase italic">Audit Complete</h3>
-                   <p className="text-xs text-white/30 font-medium leading-relaxed">
+                   <h3 className="text-lg md:text-xl font-black tracking-tight text-white uppercase italic">Audit Complete</h3>
+                   <p className="text-[10px] md:text-xs text-white/30 font-medium leading-relaxed">
                      Your skills have been extracted.
                    </p>
                 </div>
               </div>
 
-              <div className="w-full pt-2 space-y-2">
+              <div className="w-full pt-1 space-y-2">
                  <Link 
                    to="/recommendations"
-                   className="w-full py-3.5 bg-white text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-2"
+                   className="w-full py-3 md:py-3.5 bg-white text-black rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-2"
                  >
                    View Recommendations
                    <Sparkles size={14} />
                  </Link>
                  <button 
                    onClick={() => setShowModal(false)}
-                   className="w-full py-2.5 text-white/20 rounded-xl font-black text-[9px] uppercase tracking-widest hover:text-white transition-all"
+                   className="w-full py-2 text-white/20 rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest hover:text-white transition-all"
                  >
                    Dismiss
                  </button>
@@ -103,36 +103,36 @@ const ResumeAnalyzer = () => {
            </div>
         </div>
       )}
-      <div className="w-full max-w-[1200px] flex flex-col items-center space-y-24">
+      <div className="w-full max-w-[1200px] flex flex-col items-center space-y-16 md:space-y-24 px-4 md:px-0">
         
         {/* HEADER */}
-        <div className="text-center max-w-3xl space-y-6 pt-12">
-          <Badge variant="outline" className="mb-4">
+        <div className="text-center max-w-3xl space-y-4 md:space-y-6 pt-8 md:pt-12">
+          <Badge variant="outline" className="mb-2 md:mb-4">
             <Sparkles size={14} className="text-indigo-400 mr-1" /> AI Resume Core
           </Badge>
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
             AI Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">ATS Checker</span>
           </h1>
-          <p className="text-white/40 text-lg font-medium leading-relaxed">
+          <p className="text-white/40 text-base md:text-lg font-medium leading-relaxed px-2">
             Upload your resume and our AI will analyze it against modern Applicant Tracking Systems to measure compatibility, extract skills, and provide professional suggestions.
           </p>
         </div>
 
         {/* UPLOAD CARD */}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center px-2">
           <Card className="w-full max-w-2xl overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none" />
-            <CardContent className="p-16 flex flex-col items-center text-center space-y-8 relative z-10">
-              <label htmlFor="resumeUpload" className="flex flex-col items-center space-y-8 cursor-pointer w-full group-hover:scale-[1.02] transition-transform duration-300">
-                <div className="w-24 h-24 rounded-3xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shadow-inner border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                  <UploadCloud size={48} strokeWidth={1.5} />
+            <CardContent className="p-8 md:p-16 flex flex-col items-center text-center space-y-6 md:space-y-8 relative z-10">
+              <label htmlFor="resumeUpload" className="flex flex-col items-center space-y-6 md:space-y-8 cursor-pointer w-full group-hover:scale-[1.02] transition-transform duration-300">
+                <div className="w-16 h-16 md:w-24 md:h-24 rounded-3xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shadow-inner border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                  <UploadCloud size={32} md:size={48} strokeWidth={1.5} />
                 </div>
                 
                 <div className="space-y-2">
-                  <span className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-white text-black font-bold hover:bg-white/90 transition-colors shadow-xl">
+                  <span className="inline-flex items-center justify-center h-10 md:h-12 px-6 md:px-8 rounded-full bg-white text-black font-bold hover:bg-white/90 transition-colors shadow-xl text-sm md:text-base">
                     Select Resume File
                   </span>
-                  <p className="text-white/30 text-sm font-medium mt-4">
+                  <p className="text-white/30 text-[10px] md:text-sm font-medium mt-2 md:mt-4">
                     Supported: PDF, DOCX, TXT (Max 5MB)
                   </p>
                 </div>
@@ -141,7 +141,7 @@ const ResumeAnalyzer = () => {
               <input type="file" id="resumeUpload" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.txt" />
               
               {selectedFile && !loading && !result && (
-                <Badge variant="success" className="mt-4"><FileText size={12}/> {selectedFile.name}</Badge>
+                <Badge variant="success" className="mt-2 md:mt-4"><FileText size={12}/> {selectedFile.name}</Badge>
               )}
             </CardContent>
           </Card>

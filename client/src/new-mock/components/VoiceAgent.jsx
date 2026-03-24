@@ -165,6 +165,11 @@ export default function VoiceAgent({ interview, onFinished }) {
   const startInterview = useCallback(async () => {
     setStatus(CALL_STATUS.CONNECTING);
     try {
+      const isHindi = interview.language?.toLowerCase() === "hindi" || interview.language?.toLowerCase() === "hinglish";
+      const sessionGreeting = isHindi
+          ? `नमस्ते। मैं जैमिनी हूँ। चलिए आपका ${interview.role} का इंटरव्यू शुरू करते हैं। पहला सवाल: ${interview.questions[0] || "अपने बारे में बताइए।"}`
+          : `Hello. I am Gemini. Let's start the ${interview.role} interview. First topic: ${interview.questions[0] || "Introduction"}`;
+
       // 1. Try Real AI Token
       let token;
       try {
@@ -179,11 +184,9 @@ export default function VoiceAgent({ interview, onFinished }) {
       
       vapiRef.current.on("call-start", () => {
         setStatus(CALL_STATUS.ACTIVE);
-        const firstMessage = `Hello. I am Gemini. Let's start the ${interview.role} interview. First topic: ${interview.questions[0] || "Introduction"}`;
-        const firstEntry = { role: "assistant", content: firstMessage };
+        const firstEntry = { role: "assistant", content: sessionGreeting };
         transcriptRef.current = [firstEntry];
         setTranscript([firstEntry]);
-        setTimeout(() => vapiRef.current?.say(firstMessage), 500);
       });
 
       vapiRef.current.on("speech-start", () => setIsSpeaking(true));
@@ -208,9 +211,17 @@ export default function VoiceAgent({ interview, onFinished }) {
       vapiRef.current.on("call-end", () => handleEndInterview(transcriptRef.current));
 
       await vapiRef.current.start({
-        model: { provider: "openai", model: "gpt-4", systemPrompt: "Speak provided text ONLY." },
-        voice: { provider: "11labs", voiceId: "sarah" },
-        firstMessage: "",
+        model: { 
+          provider: "openai", 
+          model: "gpt-3.5-turbo", 
+          messages: [{ role: "system", content: "You are an AI interviewer." }]
+        },
+        voice: { 
+          provider: "elevenlabs", 
+          voiceId: "2zRM7PkgwBPiau2jvVXc",
+          model: "eleven_multilingual_v2"
+        },
+        firstMessage: sessionGreeting
       });
 
     } catch (err) {

@@ -168,31 +168,62 @@
 
 // export default MainLayout;
 
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import { Menu, X as CloseIcon } from "lucide-react";
 
 const MainLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
-    <div
-      className={`grid ${
-        isSidebarCollapsed
-          ? "grid-cols-[80px_1fr]"
-          : "grid-cols-[260px_1fr]"
-      } gap-6 p-4 md:p-6 h-screen w-screen bg-[#06060a] overflow-hidden text-white font-sans transition-all duration-500`}
-    >
-      {/* Sidebar */}
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-      />
+    <div className="flex h-screen w-screen bg-[#06060a] overflow-hidden text-white font-sans flex-col lg:flex-row">
+      <div className="lg:hidden flex h-[72px] items-center justify-between px-6 bg-[#0a0a0f] border-b border-white/[0.06] z-50 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+            <span className="text-black font-black text-[10px]">SR</span>
+          </div>
+          <span className="text-[16px] font-bold tracking-tight text-white">SkillRise</span>
+        </div>
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all active:scale-95"
+        >
+          {isMobileMenuOpen ? <CloseIcon size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
-      {/* Main Content */}
-      <main className="w-full h-full overflow-y-auto bg-[#0a0a0f] border border-white/[0.06] rounded-[24px]">
-        <div className="px-10 py-10">
-          <Outlet />
+      <div 
+        className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 transform lg:relative lg:translate-x-0 ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        } ${isSidebarCollapsed ? "lg:w-[84px]" : "lg:w-[260px]"} w-[280px] p-4 lg:p-6 lg:block h-full shrink-0`}
+      >
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
+      </div>
+
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6 scrollbar-hide">
+          <div className="bg-[#0a0a0f] border border-white/[0.06] rounded-[24px] min-h-full transition-all duration-500 hover:border-white/10 relative shadow-2xl overflow-hidden">
+            <div className="px-6 py-8 md:px-10 md:py-10">
+              <Outlet />
+            </div>
+          </div>
         </div>
       </main>
     </div>

@@ -157,7 +157,7 @@ useEffect(() => {
         .animate-marquee { animation: marquee 30s linear infinite; }
       `}</style>
 
-      <div className="relative z-10 w-full h-full flex flex-col gap-10 px-10">
+      <div className="relative z-10 w-full h-full flex flex-col gap-10 px-4 md:px-10">
 
         {/* Greeting */}
         <div className="w-full flex flex-col items-center text-center mt-4">
@@ -186,9 +186,9 @@ useEffect(() => {
             </div>
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight px-2">
             Good Evening, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">{username}.</span>
-            <br />
+            <br className="hidden md:block" />
             Ready for your next breakthrough?
           </h1>
         </div>
@@ -205,7 +205,7 @@ useEffect(() => {
             <div className="h-px bg-gradient-to-l from-transparent to-white/20 flex-1" />
           </div>
 
-          <div className="grid grid-cols-3 gap-6 w-full pb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full pb-10">
             {features.map((f, i) => (
               <FeatureCard key={i} {...f} onClick={() => navigate(f.path)} />
             ))}
