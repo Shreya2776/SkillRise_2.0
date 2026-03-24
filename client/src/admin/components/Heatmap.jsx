@@ -261,64 +261,99 @@ export default function Heatmap({ stateData: propStateData = [] }) {
   const [tooltip, setTooltip] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [stateDataMap, setStateDataMap] = useState({});
   const geoLoggedRef = useRef(false);
 
-  // Create flexible state data map
-  const stateDataMap = {};
-  
-  propStateData.forEach((s) => {
-    const stateInfo = {
-      state: s.state,
-      totalUsers: s.count,
-      gapLevel: s.count < 5 ? "Critical" : s.count < 15 ? "Moderate" : "Good",
-      gapColor: s.count < 5 ? "#ef4444" : s.count < 15 ? "#f59e0b" : "#10b981"
-    };
-    
-    // Store with multiple variations for matching
-    const stateName = s.state.trim();
-    stateDataMap[stateName] = stateInfo;
-    stateDataMap[stateName.toLowerCase()] = stateInfo;
-    stateDataMap[stateName.toUpperCase()] = stateInfo;
-    stateDataMap[stateName.replace(/\s+/g, '')] = stateInfo;
-    stateDataMap[stateName.replace(/\s+/g, '').toLowerCase()] = stateInfo;
-  });
-
+  // Pre-calculate complete state data map on component mount or data change
   useEffect(() => {
     console.log("📊 Heatmap received state data:", propStateData);
-    console.log("🗺️ State data map keys:", Object.keys(stateDataMap).slice(0, 10));
+    
+    const dataMap = {};
+    
+    // Process ALL states from backend (including count: 0 states)
+    propStateData.forEach((s) => {
+      const stateInfo = {
+        state: s.state,
+        totalUsers: s.count,
+        gapLevel: s.gapLevel || (s.count === 0 ? "No Data" : 
+                                  s.count < 5 ? "Critical" : 
+                                  s.count < 15 ? "Moderate" : "Good"),
+        gapColor: s.gapColor || (s.count === 0 ? "#6b7280" :
+                                 s.count < 5 ? "#ef4444" : 
+                                 s.count < 15 ? "#f59e0b" : "#10b981")
+      };
+      
+      // Store with multiple variations for flexible GeoJSON matching
+      const stateName = s.state.trim();
+      
+      // Store exact name
+      dataMap[stateName] = stateInfo;
+      dataMap[stateName.toLowerCase()] = stateInfo;
+      dataMap[stateName.toUpperCase()] = stateInfo;
+      
+      // Store without spaces
+      dataMap[stateName.replace(/\s+/g, '')] = stateInfo;
+      dataMap[stateName.replace(/\s+/g, '').toLowerCase()] = stateInfo;
+      
+      // Store shortened versions for GeoJSON matching
+      // "Andaman and Nicobar Islands" → "Andaman and Nicobar"
+      if (stateName.includes('Islands')) {
+        const shortened = stateName.replace(' Islands', '');
+        dataMap[shortened] = stateInfo;
+        dataMap[shortened.toLowerCase()] = stateInfo;
+      }
+      
+      // "Dadra and Nagar Haveli and Daman and Diu" → "Dadra and Nagar Haveli"
+      if (stateName.includes('Dadra')) {
+        dataMap['Dadra and Nagar Haveli'] = stateInfo;
+        dataMap['dadra and nagar haveli'] = stateInfo;
+      }
+    });
+    
+    setStateDataMap(dataMap);
+    console.log("🗺️ Complete state data map created with", Object.keys(dataMap).length, "entries");
+    console.log("🗺️ Sample keys:", Object.keys(dataMap).slice(0, 10));
   }, [propStateData]);
 
   const getStateName = (geo) => {
-    // The GeoJSON uses 'st_nm' property (lowercase)
     const geoProps = geo.properties;
-    return geoProps.st_nm || geoProps.ST_NM || geoProps.name || geoProps.NAME || geoProps.state || geoProps.STATE || null;
+    // ✅ FIXED: Use NAME_1 which is the actual property in this GeoJSON
+    return geoProps.NAME_1 || geoProps.name || geoProps.state || geoProps.ST_NM || geoProps.st_nm || null;
   };
 
   const getData = (geoName) => {
     if (!geoName) return null;
     
     // Try multiple matching strategies
-    return stateDataMap[geoName] || 
+    const result = stateDataMap[geoName] || 
            stateDataMap[geoName.toLowerCase()] ||
            stateDataMap[geoName.toUpperCase()] ||
            stateDataMap[geoName.replace(/\s+/g, '')] ||
            stateDataMap[geoName.replace(/\s+/g, '').toLowerCase()];
+    
+    if (!result) {
+      console.log(`⚠️ No match found for: "${geoName}"`);
+    }
+    
+    return result;
   };
 
   const getColor = (geoName) => {
     const data = getData(geoName);
-    if (!data) return "rgba(255,255,255,0.04)";
+    if (!data) return "rgba(255,255,255,0.04)"; // Fallback for unmatched states
 
-    if (data.totalUsers < 5) return "rgba(239, 68, 68, 0.6)";
-    if (data.totalUsers < 15) return "rgba(245, 158, 11, 0.5)";
-    return "rgba(34, 197, 94, 0.5)";
+    // Use pre-calculated colors from backend
+    if (data.totalUsers === 0) return "rgba(107, 114, 128, 0.3)"; // Gray for no data
+    if (data.totalUsers < 5) return "rgba(239, 68, 68, 0.6)"; // Red - Critical
+    if (data.totalUsers < 15) return "rgba(245, 158, 11, 0.5)"; // Orange - Moderate
+    return "rgba(34, 197, 94, 0.5)"; // Green - Good
   };
 
   const handleMouseEnter = (geo, evt) => {
     const name = getStateName(geo);
     const data = getData(name);
     
-    console.log(`🖱️ Hovering: "${name}" | Data found:`, data ? `✅ ${data.totalUsers} users` : "❌ No data");
+    console.log(`🖱️ Hovering: "${name}" | Data:`, data ? `✅ ${data.totalUsers} users (${data.gapLevel})` : "❌ No data");
     
     setTooltip({ name, data });
     setTooltipPos({ x: evt.clientX, y: evt.clientY });
@@ -333,6 +368,9 @@ export default function Heatmap({ stateData: propStateData = [] }) {
       
       const geoNames = geographies.map(g => getStateName(g));
       console.log("🗺️ GeoJSON state names:", geoNames);
+      
+      // Log first 5 state names for debugging
+      console.log("🗺️ First 5 states from GeoJSON:", geoNames.slice(0, 5));
     }
   };
 
@@ -361,7 +399,7 @@ export default function Heatmap({ stateData: propStateData = [] }) {
             <span className="text-[10px] text-white/50 font-semibold">Good (&gt;15)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-white/10" />
+            <div className="w-3 h-3 rounded-full bg-gray-500" />
             <span className="text-[10px] text-white/50 font-semibold">No Data</span>
           </div>
         </div>
@@ -380,7 +418,6 @@ export default function Heatmap({ stateData: propStateData = [] }) {
             <ZoomableGroup zoom={1} minZoom={0.8} maxZoom={4}>
               <Geographies geography={INDIA_TOPO_JSON}>
                 {({ geographies }) => {
-                  // Log GeoJSON properties once for debugging (using ref to avoid setState during render)
                   logGeoData(geographies);
                   
                   return geographies.map((geo) => {
