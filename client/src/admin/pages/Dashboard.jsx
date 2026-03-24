@@ -1,11 +1,11 @@
-
 // import { useState, useEffect } from "react";
 // import { io } from "socket.io-client";
 // import StatsCard from "../components/StatsCard";
 // import Heatmap from "../components/Heatmap";
 // import SkillChart from "../components/SkillChart";
-// import Insights from "../components/Insights";
 // import TrendingSkills from "../components/TrendingSkills";
+// import AIInsights from "../components/AIInsights";
+// import PolicyRecommender from "../components/PolicyRecommender";
 // import UserGrowthChart from "../components/UserGrowthChart";
 // import { getAdminStats } from "../../services/adminApi";
 
@@ -34,7 +34,7 @@
 //     fetchStats();
 
 //     // WebSocket for real-time updates
-//     const socket = io("http://localhost:5000");
+//     const socket = io(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/auth", "") : "http://localhost:5000");
 
 //     socket.on("connect", () => {
 //       console.log("🔌 Connected to real-time updates");
@@ -131,24 +131,26 @@
 //       {/* User Growth Chart */}
 //       <UserGrowthChart userGrowth={stats.userGrowth || []} />
 
-//       {/* Charts + Side panels */}
+//       {/* Skills and Trending */}
 //       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
 //         <div className="xl:col-span-8">
 //           <SkillChart skillsData={stats.topSkills || []} />
 //         </div>
-//         <div className="xl:col-span-4 space-y-8">
+//         <div className="xl:col-span-4">
 //           <TrendingSkills skills={stats.topSkills || []} />
 //         </div>
 //       </div>
 
-//       {/* Insights */}
-//       <Insights stats={stats} />
+//       {/* AI Insights */}
+//       <AIInsights insights={stats.aiInsights || []} />
+
+//       {/* Policy Recommendations */}
+//       <PolicyRecommender recommendations={stats.policyRecommendations || []} />
 //     </div>
 //   );
 // }
 
 
-// client/src/admin/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import StatsCard from "../components/StatsCard";
@@ -164,11 +166,12 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [dateRange, setDateRange] = useState(30); // Default 30 days
 
-  const fetchStats = async () => {
+  const fetchStats = async (range = dateRange) => {
     try {
-      console.log("🔄 Fetching admin stats...");
-      const response = await getAdminStats();
+      console.log(`🔄 Fetching admin stats for ${range} days...`);
+      const response = await getAdminStats(range);
       if (response.success) {
         console.log("✅ Stats received:", response.data);
         setStats(response.data);
@@ -181,11 +184,16 @@ export default function Dashboard() {
     }
   };
 
+  const handleRangeChange = (newRange) => {
+    setDateRange(newRange);
+    fetchStats(newRange);
+  };
+
   useEffect(() => {
     fetchStats();
 
     // WebSocket for real-time updates
-    const socket = io(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/auth", "") : "http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/auth", "") : "http://localhost:8000");
 
     socket.on("connect", () => {
       console.log("🔌 Connected to real-time updates");
@@ -197,7 +205,7 @@ export default function Dashboard() {
     });
 
     // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchStats, 30000);
+    const interval = setInterval(() => fetchStats(), 30000);
 
     return () => {
       socket.disconnect();
@@ -279,8 +287,12 @@ export default function Dashboard() {
       {/* India Heatmap */}
       <Heatmap stateData={stats.stateAnalytics || []} />
 
-      {/* User Growth Chart */}
-      <UserGrowthChart userGrowth={stats.userGrowth || []} />
+      {/* User Growth Chart with Time Range Buttons */}
+      <UserGrowthChart 
+        userGrowth={stats.userGrowth || []} 
+        currentRange={dateRange}
+        onRangeChange={handleRangeChange}
+      />
 
       {/* Skills and Trending */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
