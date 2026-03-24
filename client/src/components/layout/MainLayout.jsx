@@ -170,64 +170,28 @@
 
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 const MainLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-screen bg-[#06060a] overflow-hidden text-white font-sans p-0 md:p-6 transition-all duration-500">
-      
-      {/* Sidebar Overlay for Mobile */}
-      <div className={`
-        fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden
-        ${isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
-      `} onClick={() => setIsMobileMenuOpen(false)} />
-
+    <div
+      className={`grid ${
+        isSidebarCollapsed
+          ? "grid-cols-[80px_1fr]"
+          : "grid-cols-[260px_1fr]"
+      } gap-6 p-4 md:p-6 h-screen w-screen bg-[#06060a] overflow-hidden text-white font-sans transition-all duration-500`}
+    >
       {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-[260px] transform transition-transform duration-300 md:relative md:translate-x-0
-        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:block"}
-        ${isSidebarCollapsed ? "md:w-[84px]" : "md:w-[260px]"}
-      `}>
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        />
-        
-        {/* Mobile Close Button (Optional if you want it inside Sidebar) */}
-        {isMobileMenuOpen && (
-          <button 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="absolute top-4 right-4 md:hidden p-2 text-white/40 hover:text-white"
-          >
-            <X size={24} />
-          </button>
-        )}
-      </div>
+      <Sidebar
+        isCollapsed={isSidebarCollapsed}
+        toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-[#0a0a0f] border-0 md:border md:border-white/[0.06] md:rounded-[24px]">
-        
-        {/* Mobile Header */}
-        <header className="flex items-center justify-between px-6 h-16 border-b border-white/[0.06] md:hidden shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-              <span className="text-black font-black text-xs">S</span>
-            </div>
-            <span className="text-sm font-bold tracking-tight">SkillRise</span>
-          </div>
-          <button 
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 rounded-lg bg-white/5 border border-white/10"
-          >
-            <Menu size={20} />
-          </button>
-        </header>
-
-        <div className="flex-1 overflow-y-auto px-4 py-6 md:px-10 md:py-10 scrollbar-hide">
+      <main className="w-full h-full overflow-y-auto bg-[#0a0a0f] border border-white/[0.06] rounded-[24px]">
+        <div className="px-10 py-10">
           <Outlet />
         </div>
       </main>

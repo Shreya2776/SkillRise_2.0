@@ -5,7 +5,7 @@ import { Sparkles, TrendingUp, Compass, Loader2, AlertCircle, Briefcase } from "
 import BlogCard from "../ngo/components/BlogCard";
 import OpportunityCard from "../components/OpportunityCard";
 
-const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth").replace("/api/auth", "/api");
+const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace("/api/auth", "/api");
 
 export default function FeedPage() {
   const [feedData, setFeedData] = useState({ personalized: [], trending: [], explore: [] });

@@ -14,8 +14,7 @@ import {
   FileText,
   Sparkles,
   Zap,
-  Compass,
-  Bot
+  Compass
 } from "lucide-react";
 
 import FeatureModal from "../components/common/FeatureModal";
@@ -130,7 +129,7 @@ useEffect(() => {
     { title: "Personalized Feed", description: "Curated blogs & learning content for you", icon: Compass, path: "/feed", colorName: "emerald" },
     { title: "Career Roadmap", description: "Month-by-month journey to success", icon: Map, path: "/learning-roadmap", colorName: "amber" },
     { title: "Mock Interview", description: "High-pressure AI-driven simulations", icon: PlayCircle, path: "/interviews", colorName: "rose" },
-    { title: "Agentic Chatbot", description: "Your virtual career co-pilot", icon: Bot, path: "/chatbot", colorName: "cyan" },
+    { title: "Skill Gap Analysis", description: "Find missing skills for your target role", icon: Binary, path: "/skill-gap", colorName: "cyan" },
   ];
 
 
@@ -158,7 +157,7 @@ useEffect(() => {
         .animate-marquee { animation: marquee 30s linear infinite; }
       `}</style>
 
-      <div className="relative z-10 w-full h-full flex flex-col gap-6 md:gap-10 px-4 md:px-10">
+      <div className="relative z-10 w-full h-full flex flex-col gap-10 px-10">
 
         {/* Greeting */}
         <div className="w-full flex flex-col items-center text-center mt-4">
@@ -187,7 +186,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight px-4">
+          <h1 className="text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
             Good Evening, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">{username}.</span>
             <br />
             Ready for your next breakthrough?
@@ -206,7 +205,7 @@ useEffect(() => {
             <div className="h-px bg-gradient-to-l from-transparent to-white/20 flex-1" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full pb-10">
+          <div className="grid grid-cols-3 gap-6 w-full pb-10">
             {features.map((f, i) => (
               <FeatureCard key={i} {...f} onClick={() => navigate(f.path)} />
             ))}

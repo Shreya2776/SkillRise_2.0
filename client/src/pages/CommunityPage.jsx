@@ -9,7 +9,7 @@ import {
 import BlogCard from "../ngo/components/BlogCard";
 import ProgramCard from "../ngo/components/ProgramCard";
 
-const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth").replace("/api/auth", "/api");
+const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace("/api/auth", "/api");
 
 const TAB_OPTIONS = [
   { id: "blogs", label: "Blogs & Courses", icon: BookOpen },

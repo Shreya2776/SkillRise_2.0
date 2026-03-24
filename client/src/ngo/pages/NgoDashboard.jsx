@@ -14,7 +14,7 @@ import ProgramCard from "../components/ProgramCard";
 import OpportunityForm from "../components/OpportunityForm";
 import OpportunityCard from "../../components/OpportunityCard";
 // Base API configuration
-const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth").replace("/api/auth", "/api");
+const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace("/api/auth", "/api");
 const BLOG_URL = `${BASE_API}/blogs`;
 const PROGRAM_URL = `${BASE_API}/programs`;
 const OPPORTUNITY_URL = `${BASE_API}/opportunities`;
