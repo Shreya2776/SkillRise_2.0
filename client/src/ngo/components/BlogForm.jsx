@@ -17,7 +17,7 @@ export default function BlogForm({ onSubmit, initialData, onCancel }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiInput, setAiInput] = useState({ topic: "", details: "" });
 
-  const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth").replace("/api/auth", "/api");
+  const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace("/api/auth", "/api");
 
   useEffect(() => {
     if (initialData) {

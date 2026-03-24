@@ -89,18 +89,18 @@ const SkillGapAnalysis = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-6 py-10">
+      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-12 md:mb-20 pt-4 md:pt-0">
           <div>
-            <h1 className="text-4xl font-extrabold text-white tracking-tight mb-3">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2 md:mb-3">
                Competency <span className="text-white/60">Benchmarking</span>
             </h1>
-            <p className="text-sm text-muted font-medium">Quantum profile comparison against target professional protocols.</p>
+            <p className="text-xs md:text-sm text-muted font-medium">Quantum profile comparison against target professional protocols.</p>
           </div>
 
-          <div className="relative group">
+          <div className="relative group w-full md:w-auto">
             <div className="absolute -top-3 left-4 bg-[#0a0a0a] px-2 text-[9px] font-black text-muted uppercase tracking-[0.2em] z-10 transition-colors group-hover:text-white">
                Focus Protocol
             </div>
@@ -108,7 +108,7 @@ const SkillGapAnalysis = () => {
               <select 
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
-                className="bg-white/2 border border-white/10 rounded-2xl py-3.5 pl-6 pr-12 text-white font-bold text-xs focus:outline-none focus:border-white/20 appearance-none cursor-pointer transition-all hover:bg-white/5 min-w-[260px] uppercase tracking-widest"
+                className="w-full md:min-w-[260px] bg-white/2 border border-white/10 rounded-2xl py-3.5 pl-6 pr-12 text-white font-bold text-xs focus:outline-none focus:border-white/20 appearance-none cursor-pointer transition-all hover:bg-white/5 uppercase tracking-widest"
               >
                 <option>Senior AI Engineer</option>
                 <option>Full Stack Developer</option>
@@ -120,46 +120,46 @@ const SkillGapAnalysis = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-8 space-y-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+          <div className="lg:col-span-8 space-y-8 md:space-y-12">
             {/* 1. Verified Skills */}
-            <section className="bg-white/2 border border-white/5 rounded-[2.5rem] p-10">
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40">
-                  <CheckCircle2 size={18} />
+            <section className="bg-white/2 border border-white/5 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
+              <div className="flex items-center gap-4 mb-6 md:mb-10">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-white/40">
+                  <CheckCircle2 size={16} md:size={18} />
                 </div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em]">Verified Assets</h3>
+                <h3 className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.2em]">Verified Assets</h3>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 md:gap-3">
                 {currentSkills.map(skill => (
                   <SkillBadge key={skill} name={skill} />
                 ))}
-                <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/30 border border-dashed border-white/10 hover:border-white/30 hover:text-white transition-all">
+                <button className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 border border-dashed border-white/10 hover:border-white/30 hover:text-white transition-all">
                   + Add Protocol
                 </button>
               </div>
             </section>
 
             {/* 2. Gap Identification */}
-            <section className="bg-white/2 border border-white/5 rounded-[2.5rem] p-10">
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40">
-                  <AlertCircle size={18} />
+            <section className="bg-white/2 border border-white/5 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
+              <div className="flex items-center gap-4 mb-6 md:mb-10">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-white/40">
+                  <AlertCircle size={16} md:size={18} />
                 </div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em]">Optimization Vectors</h3>
+                <h3 className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.2em]">Optimization Vectors</h3>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {gapData.map((item, i) => (
-                  <div key={i} className="group p-6 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-white/10 hover:bg-white/2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-start gap-5">
-                      <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white opacity-20 group-hover:opacity-100 transition-opacity" />
+                  <div key={i} className="group p-4 md:p-6 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-white/10 hover:bg-white/2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                    <div className="flex items-start gap-4 md:gap-5">
+                      <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white opacity-20 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       <div>
                         <h4 className="text-white font-bold text-sm mb-1 tracking-tight">{item.skill}</h4>
-                        <p className="text-muted text-[11px] leading-relaxed max-w-sm">{item.reason}</p>
+                        <p className="text-muted text-[10px] md:text-[11px] leading-relaxed max-w-sm">{item.reason}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6 shrink-0">
+                    <div className="flex items-center justify-between sm:justify-end gap-4 md:gap-6 shrink-0 mt-2 sm:mt-0">
                       <PriorityBadge level={item.priority} />
                       <button className="text-muted hover:text-white transition-colors">
                         <ArrowRight size={14} />
@@ -171,13 +171,13 @@ const SkillGapAnalysis = () => {
             </section>
           </div>
 
-          <div className="lg:col-span-4 space-y-12">
+          <div className="lg:col-span-4 space-y-8 md:space-y-12">
             {/* Match Insight */}
-            <div className="bg-white text-black rounded-[2.5rem] p-10 relative overflow-hidden group shadow-2xl">
+            <div className="bg-white text-black rounded-[2rem] md:rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group shadow-2xl">
               <div className="relative z-10">
-                <p className="text-black/40 font-black text-[10px] uppercase tracking-[0.2em] mb-4">Match Efficiency</p>
-                <h3 className="text-7xl font-black mb-4 tracking-tighter">62 <span className="text-lg opacity-30">%</span></h3>
-                <p className="text-black/60 text-xs leading-relaxed font-bold uppercase tracking-widest mb-10">
+                <p className="text-black/40 font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] mb-4">Match Efficiency</p>
+                <h3 className="text-6xl md:text-7xl font-black mb-4 tracking-tighter">62 <span className="text-lg opacity-30">%</span></h3>
+                <p className="text-black/60 text-[10px] md:text-xs leading-relaxed font-bold uppercase tracking-widest mb-8 md:mb-10">
                   Protocol synchronization is <span className="text-black underline decoration-black/20 underline-offset-4">partial</span>.
                 </p>
                 <div className="h-2 w-full bg-black/5 rounded-full overflow-hidden">
@@ -188,12 +188,12 @@ const SkillGapAnalysis = () => {
             </div>
 
             {/* 3. Learning Protocols */}
-            <section className="space-y-8">
+            <section className="space-y-6 md:space-y-8">
               <div className="flex items-center gap-3">
                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                 <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em]">Learning Vectors</h3>
+                 <h3 className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.2em]">Learning Vectors</h3>
               </div>
-              <div className="space-y-5">
+              <div className="space-y-4 md:space-y-5">
                 {recommendations.map((course, i) => (
                   <CourseCard key={i} {...course} />
                 ))}

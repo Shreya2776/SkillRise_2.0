@@ -40,7 +40,7 @@ export default function ProfileSetup() {
         return;
       }
 
-    const API_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "") : "http://localhost:5000/api";
+    const API_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "") : "http://localhost:8000/api";
     const res = await fetch(`${API_BASE}/profile/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ const handleSubmit = async () => {
   try {
     const token = localStorage.getItem("token");
     console.log("TOKEN:", token);
-    const API_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "") : "http://localhost:5000/api";
+    const API_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "") : "http://localhost:8000/api";
     const res = await fetch(`${API_BASE}/profile/save`, {
       method: "POST",
       headers: {
@@ -372,7 +372,7 @@ const handleSubmit = async () => {
 
       <div
         {...handlers}
-        className="w-full max-w-[800px] h-[680px] max-h-[92vh] rounded-3xl p-4 sm:p-6 
+        className="w-[800px] max-w-[95%] h-[680px] max-h-[92vh] rounded-3xl p-6 
         bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl overflow-hidden"
       >
 
@@ -526,8 +526,8 @@ function FormWrapper({ title, children, onSubmit }) {
     <div className="min-w-full px-6 flex flex-col h-full">
       <h2 className="text-xl font-semibold mb-4">{title}</h2>
 
-      <div className="flex-1 overflow-y-auto pr-2 custom-scroll min-h-0 py-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
+      <div className="flex-1 overflow-y-auto pr-2 custom-scroll min-h-0">
+        <div className="grid grid-cols-2 gap-4">{children}</div>
       </div>
 
       <div className="pt-4 bg-gradient-to-t from-black/40">
@@ -540,7 +540,7 @@ function FormWrapper({ title, children, onSubmit }) {
 }
 
 function Full({ children }) {
-  return <div className="col-span-1 md:col-span-2">{children}</div>;
+  return <div className="col-span-2">{children}</div>;
 }
 
 function Input({ icon, value, placeholder, onChange }) {

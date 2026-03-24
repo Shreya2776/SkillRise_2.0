@@ -34,7 +34,7 @@
 //     fetchStats();
 
 //     // WebSocket for real-time updates
-//     const socket = io(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/auth", "") : "http://localhost:5000");
+//     const socket = io(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/auth", "") : "http://localhost:8000");
 
 //     socket.on("connect", () => {
 //       console.log("🔌 Connected to real-time updates");

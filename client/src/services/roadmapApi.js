@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/roadmap") : "http://localhost:5000/api/roadmap";
+const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/roadmap") : "http://localhost:8000/api/roadmap";
 export const generateRoadmap = async (data) => {
   try {
     const res = await axios.post(`${API_URL}/generate`, data, {

@@ -12,7 +12,7 @@ export default function ProfileDashboard() {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/profile/me") : "http://localhost:5000/api/profile/me",
+          import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/profile/me") : "http://localhost:8000/api/profile/me",
           {
             headers: {
               Authorization: `Bearer ${token}`,
