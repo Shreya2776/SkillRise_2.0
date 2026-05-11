@@ -1,5 +1,5 @@
 // controllers/authController.js
-import User from "../models/user.js";
+import User from "../models/User.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 import { saveOtp } from "../utils/otpStore.js";

@@ -1,6 +1,6 @@
 // // backend/src/controllers/adminController.js
 
-// import User from "../models/user.js";
+// import User from "../models/User.js";
 // import Profile from "../models/Profile.js";
 // import { resolveLocationToState } from "../utils/LocationResolver.js";
 // import { generateAIInsights, generatePolicyRecommendations } from "../services/aiAnalytics.js";

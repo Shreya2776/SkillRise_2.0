@@ -1,4 +1,4 @@
-import('./src/models/user.js').then(async userModule => {
+import('./src/models/User.js').then(async userModule => {
   const User = userModule.default;
   import('mongoose').then(async m => {
     await m.default.connect('mongodb+srv://yadavjhalak3211_db_user:sankalp26@cluster0.fgiyffq.mongodb.net/mern-auth');
