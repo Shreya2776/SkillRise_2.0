@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_ANALYZER_API_URL || "http://localhost:5001/api/analyzer"
+  baseURL: (import.meta.env.VITE_API_URL || "http://localhost:8000/api") + "/resume"
 });
 
 export const analyzeResume = async (file) => {

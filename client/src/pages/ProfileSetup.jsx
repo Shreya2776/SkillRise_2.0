@@ -145,7 +145,8 @@ const handleSubmit = async () => {
     };
 
     return (
-      <div className="min-h-screen bg-[#0a0a0f] text-white py-12 px-4 relative overflow-y-auto">
+      <div className="w-full text-white py-6 px-4 relative">
+
         <div className="max-w-4xl mx-auto space-y-6">
           
           {/* HEADER SECTION */}

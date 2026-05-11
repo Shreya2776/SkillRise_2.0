@@ -11,14 +11,6 @@ backend/.env
 backend/.env.*
 client/.env
 client/.env.*
-new_mock/server/.env
-new_mock/server/.env.*
-new_mock/client/.env
-new_mock/client/.env.*
-resume_analyser/backend/.env
-resume_analyser/backend/.env.*
-agentic-chatbot/.env
-agentic-chatbot/.env.*
 
 # Build/Dist
 client/dist/
@@ -48,3 +40,15 @@ Thumbs.db
 .cache/
 .npm/
 .vite/
+
+# Uploads
+backend/services/chatbot/uploads/
+backend/services/auth/uploads/
+*.pdf
+*.docx
+
+# Old folders (archived/deleted)
+agentic-chatbot/
+resume_analyser/
+new_mock/
+archive/

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -95,7 +94,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar, isMobile = false }) => {
 
           {/* Profile */}
           <NavLink
-            to="/profile"
+            to="/profile/dashboard"
             className={({ isActive }) =>
               cn(
                 "flex items-center rounded-xl transition-all duration-200",

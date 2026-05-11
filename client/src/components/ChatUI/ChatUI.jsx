@@ -432,7 +432,7 @@ const ChatUI = () => {
       if (selectedFile) formData.append("resume", selectedFile);
       removeFile();
 
-      const chatbotUrl = import.meta.env.VITE_CHATBOT_API_URL || "http://localhost:5002/api/chatbot/message";
+      const chatbotUrl = (import.meta.env.VITE_API_URL || "http://localhost:8000/api") + "/chatbot/message";
       const response = await fetch(chatbotUrl, {
         method: "POST",
         body: formData,
@@ -512,7 +512,7 @@ const ChatUI = () => {
       if (threadId) formData.append("threadId", threadId);
       formData.append("userId", "local-test-user");
 
-      const chatbotUrl = import.meta.env.VITE_CHATBOT_API_URL || "http://localhost:5002/api/chatbot/message";
+      const chatbotUrl = (import.meta.env.VITE_API_URL || "http://localhost:8000/api") + "/chatbot/message";
       const response = await fetch(chatbotUrl, {
         method: "POST",
         body: formData,

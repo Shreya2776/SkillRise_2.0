@@ -1,0 +1,32 @@
+export const skillDictionary = [
+
+"javascript",
+"react",
+"node",
+"express",
+"mongodb",
+"python",
+"java",
+"c++",
+"typescript",
+"docker",
+"kubernetes",
+"aws",
+"machine learning",
+"deep learning",
+"tensorflow",
+"pytorch",
+"nlp",
+"data science",
+"sql",
+"nosql",
+"redis",
+"graphql",
+"html",
+"css",
+"tailwind",
+"git",
+"github",
+"linux"
+
+];

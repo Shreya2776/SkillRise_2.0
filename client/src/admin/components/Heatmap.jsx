@@ -375,7 +375,7 @@ export default function Heatmap({ stateData: propStateData = [] }) {
   };
 
   return (
-    <div className="rounded-3xl border border-white/[0.06] bg-white/[0.02] p-8 relative">
+    <div className="rounded-3xl border border-white/6 bg-white/2 p-8 relative">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-black text-white uppercase tracking-tight">
@@ -457,7 +457,7 @@ export default function Heatmap({ stateData: propStateData = [] }) {
 
           {tooltip && tooltip.name && (
             <div
-              className="fixed z-50 pointer-events-none bg-[#12121a]/95 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-4 shadow-2xl min-w-[220px]"
+              className="fixed z-50 pointer-events-none bg-bg-card/95 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-4 shadow-2xl min-w-55"
               style={{
                 left: tooltipPos.x + 16,
                 top: tooltipPos.y - 10,
@@ -484,7 +484,7 @@ export default function Heatmap({ stateData: propStateData = [] }) {
         </div>
 
         {selectedState && selectedState.name && (
-          <div className="w-80 shrink-0 bg-white/[0.03] border border-white/[0.08] rounded-3xl p-6 animate-in slide-in-from-right-5 space-y-5 relative">
+          <div className="w-80 shrink-0 bg-white/3 border border-white/8 rounded-3xl p-6 animate-in slide-in-from-right-5 space-y-5 relative">
             <button
               onClick={() => setSelectedState(null)}
               className="absolute top-4 right-4 p-1.5 rounded-xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all"
@@ -504,12 +504,12 @@ export default function Heatmap({ stateData: propStateData = [] }) {
 
             {selectedState.data ? (
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/[0.04] rounded-2xl p-4 text-center">
+                <div className="bg-white/4 rounded-2xl p-4 text-center">
                   <Users className="w-5 h-5 text-violet-400 mx-auto mb-1" />
                   <p className="text-2xl font-black text-white">{selectedState.data.totalUsers}</p>
                   <p className="text-[10px] text-white/40 uppercase font-bold tracking-wider">Users</p>
                 </div>
-                <div className="bg-white/[0.04] rounded-2xl p-4 text-center">
+                <div className="bg-white/4 rounded-2xl p-4 text-center">
                   <AlertTriangle className="w-5 h-5 mx-auto mb-1" style={{ color: selectedState.data.gapColor }} />
                   <p className="text-2xl font-black" style={{ color: selectedState.data.gapColor }}>
                     {selectedState.data.gapLevel}
