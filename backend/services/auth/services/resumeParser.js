@@ -1,6 +1,5 @@
-
-// // }
-// import pdfParse from "pdf-parse/node";
+// import pkg from 'pdf-parse';
+// const { PDFParse } = pkg;
 // import mammoth from "mammoth";
 
 // export async function parseResume(file) {
@@ -11,8 +10,13 @@
 //   // PDF
 //   if (file.mimetype === "application/pdf") {
 //     try {
-//       const data = await pdfParse(file.buffer);
-//       return data.text;
+//       const parser = new PDFParse({ 
+//         data: file.buffer,
+//         verbosity: 0
+//       });
+//       const result = await parser.getText();
+//       await parser.destroy();
+//       return result.text;
 //     } catch (error) {
 //       console.error("PDF parsing error:", error);
 //       throw new Error(`Failed to parse PDF: ${error.message}`);
@@ -39,10 +43,8 @@
 //   return file.buffer.toString();
 // }
 
-// import * as pdf from "pdf-parse/node";
-// import mammoth from "mammoth";
-import pkg from 'pdf-parse';
-const { PDFParse } = pkg;
+
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 
 export async function parseResume(file) {
@@ -53,13 +55,8 @@ export async function parseResume(file) {
   // PDF
   if (file.mimetype === "application/pdf") {
     try {
-      const parser = new PDFParse({ 
-        data: file.buffer,
-        verbosity: 0
-      });
-      const result = await parser.getText();
-      await parser.destroy();
-      return result.text;
+      const data = await pdfParse(file.buffer);
+      return data.text;
     } catch (error) {
       console.error("PDF parsing error:", error);
       throw new Error(`Failed to parse PDF: ${error.message}`);
@@ -68,7 +65,8 @@ export async function parseResume(file) {
 
   // DOCX
   if (
-    file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
     file.mimetype.includes("word")
   ) {
     try {
@@ -82,6 +80,5 @@ export async function parseResume(file) {
     }
   }
 
-  // Plain text fallback
   return file.buffer.toString();
 }
