@@ -310,7 +310,7 @@ export async function generateAIInsights(data) {
   }
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const prompt = `Analyze this SkillRise India platform data and provide 4 actionable insights:
     
@@ -457,7 +457,7 @@ export async function generatePolicyRecommendations(data) {
   }
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const prompt = `As a policy advisor for SkillRise India, analyze this data and provide 5 policy recommendations:
 
