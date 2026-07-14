@@ -35,7 +35,7 @@ export const generateRoadmapFromAI = async (prompt, maxRetries = 3) => {
       console.log(`🔄 AI generation attempt ${attempt}/${maxRetries}...`);
       
       const res = await groqClient.post("/chat/completions", {
-        model: "llama3-8b-8192",
+        model: "llama-3.3-70b-versatile",
         messages: [
           {
             role: "system",

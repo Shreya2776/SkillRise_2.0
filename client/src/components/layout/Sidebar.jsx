@@ -24,7 +24,6 @@ const cn = (...classes) => classes.filter(Boolean).join(" ");
 const Sidebar = ({ isCollapsed, toggleSidebar, isMobile = false }) => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: Sparkles, label: "AI Recommendations", path: "/recommendations" },
     { icon: FileSearch, label: "Resume Analyzer", path: "/resume-analyzer" },
     { icon: Compass, label: "Personalized Feed", path: "/feed" },
     { icon: Map, label: "Career Roadmap", path: "/learning-roadmap" },

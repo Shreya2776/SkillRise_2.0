@@ -124,7 +124,6 @@ useEffect(() => {
   }
 }, []);
   const features = [
-    { title: "AI Recommendations", description: "Jobs & programs matched to your skills", icon: Sparkles, path: "/recommendations", colorName: "purple" },
     { title: "Resume Analyzer", description: "Instant ATS feedback & structure review", icon: FileSearch, path: "/resume-analyzer", colorName: "indigo" },
     { title: "Personalized Feed", description: "Curated blogs & learning content for you", icon: Compass, path: "/feed", colorName: "emerald" },
     { title: "Career Roadmap", description: "Month-by-month journey to success", icon: Map, path: "/learning-roadmap", colorName: "amber" },
