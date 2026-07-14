@@ -35,7 +35,7 @@ export const generateRoadmapFromAI = async (prompt, maxRetries = 3) => {
       console.log(`🔄 AI generation attempt ${attempt}/${maxRetries}...`);
       
       const res = await groqClient.post("/chat/completions", {
-        model: "llama-3.1-8b-instant",
+        model: "llama3-8b-8192",
         messages: [
           {
             role: "system",
@@ -46,8 +46,8 @@ export const generateRoadmapFromAI = async (prompt, maxRetries = 3) => {
             content: prompt,
           },
         ],
-        temperature: 0.5,
-        max_tokens: 7000,
+        temperature: 0.3,
+        max_tokens: 1800,
       });
 
       const content = res.data.choices[0].message.content;
@@ -68,9 +68,15 @@ export const generateRoadmapFromAI = async (prompt, maxRetries = 3) => {
       console.error(`❌ Attempt ${attempt} failed:`, errorMessage);
       lastError = errorMessage;
       
+      const normalizedError = lastError || "AI generation failed";
+
+      if (normalizedError.includes("Request too large") || normalizedError.includes("tokens per minute") || normalizedError.includes("exceeded")) {
+        throw new Error("The roadmap request was too large for the current AI plan. Please shorten the resume text or try again later.");
+      }
+
       // If it's the last attempt, throw with the actual error
       if (attempt === maxRetries) {
-        throw new Error(lastError);
+        throw new Error(normalizedError);
       }
       
       // Wait 1 second before retry (exponential backoff)
