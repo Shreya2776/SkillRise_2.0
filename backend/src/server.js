@@ -132,16 +132,7 @@ const io = new Server(httpServer, {
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS not allowed"));
-    }
-  },
+  origin: true,
   credentials: true
 }));
 app.use(passport.initialize());
