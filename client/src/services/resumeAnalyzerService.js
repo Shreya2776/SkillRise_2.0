@@ -1,11 +1,21 @@
 import axios from "axios";
 
+const resolveBaseUrl = (envValue, fallbackPath) => {
+  if (envValue) return envValue;
+
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}${fallbackPath}`;
+  }
+
+  return fallbackPath;
+};
+
 const ANALYZER_API = axios.create({
-  baseURL: import.meta.env.VITE_ANALYZER_API_URL || "http://localhost:5001/api/analyzer"
+  baseURL: resolveBaseUrl(import.meta.env.VITE_ANALYZER_API_URL, "/api/analyzer")
 });
 
 const MAIN_API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api"
+  baseURL: resolveBaseUrl(import.meta.env.VITE_API_URL, "/api")
 });
 
 export const analyzeResume = async (file, jobDescription = "", jobSkills = []) => {
