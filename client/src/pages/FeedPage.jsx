@@ -10,7 +10,7 @@ import {
 import BlogCard from "../ngo/components/BlogCard";
 import OpportunityCard from "../components/OpportunityCard";
 
-const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace("/api/auth", "/api");
+const BASE_API = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth").replace(/\/api\/.*$/, "/api");
 
 const glassStyle = {
   background: "rgba(25, 27, 35, 0.6)",
@@ -94,12 +94,12 @@ export default function FeedPage() {
     const d = profileData?.data || {};
     return [
       { label: "Name", value: d.name },
-      { label: "Bio", value: d.bio || d.summary },
-      { label: "Skills", value: d.skills?.length > 0 },
-      { label: "Experience", value: d.experience },
-      { label: "Education", value: d.education },
+      { label: "Bio", value: d.bio || d.summary || d.goal },
+      { label: "Skills", value: d.skills && d.skills.length > 0 },
+      { label: "Experience", value: d.experience || d.exp },
+      { label: "Education", value: d.education || d.college || d.degree },
       { label: "Location", value: d.location },
-      { label: "Target Role", value: d.targetRole || d.desiredRole },
+      { label: "Target Role", value: d.targetRole || d.desiredRole || d.role },
     ];
   })();
   const filledCount = profileFields.filter(f => f.value).length;
@@ -110,7 +110,7 @@ export default function FeedPage() {
   const roadmapPct = roadmapTotal > 0 ? Math.round((roadmapDone / roadmapTotal) * 100) : 0;
 
   const userName = profileData?.data?.name?.split(" ")[0] || "there";
-  const targetRole = roadmapData?.targetRole || resumeAnalysis?.jobTitle || "your goal";
+  const targetRole = roadmapData?.targetRole || resumeAnalysis?.jobTitle || profileData?.data?.role || profileData?.data?.goal || "your goal";
 
   const skillGaps = [
     { title: "Advanced Node.js Patterns", desc: "Close the loop with enterprise backend architecture.", salary: "+15% Salary Potential", progress: "33%" },
@@ -163,7 +163,7 @@ export default function FeedPage() {
               <span className="text-blue-300 font-bold block mb-2 text-xs uppercase tracking-widest">Pro Tip</span>
               <p className="text-white/70 leading-snug italic text-sm">
                 {resumeAnalysis
-                  ? `Your ATS score is ${resumeAnalysis.score}/100. ${resumeAnalysis.score < 75 ? "Improve your resume keywords to boost visibility." : "Great score! Keep your resume updated."}`
+                  ? `Your ATS score is ${resumeAnalysis.score}/100${resumeAnalysis.metadata?.jobTitle ? ` for ${resumeAnalysis.metadata.jobTitle}` : ""}. ${resumeAnalysis.score < 75 ? "Improve your resume keywords to boost visibility." : "Great score! Keep your resume updated."}`
                   : "Upload your resume to get an ATS score and personalized job matches."}
               </p>
             </div>
@@ -187,6 +187,9 @@ export default function FeedPage() {
               <div className="flex items-center gap-2">
                 <FileSearch size={16} className="text-indigo-400" />
                 <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Latest Resume Analysis</span>
+                {resumeAnalysis.metadata?.jobTitle && (
+                  <span className="text-xs text-indigo-300/60 font-medium">— {resumeAnalysis.metadata.jobTitle}</span>
+                )}
               </div>
               <button onClick={() => navigate("/resume-analyzer")} className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
                 Analyze Again <ChevronRight size={14} />
@@ -412,7 +415,9 @@ export default function FeedPage() {
                 <div className="h-40 relative overflow-hidden bg-gradient-to-br from-blue-900/40 to-indigo-900/40 flex items-center justify-center">
                   <Sparkles size={48} className="text-blue-400/30" />
                   <div className="absolute top-4 left-4 bg-blue-400/90 backdrop-blur px-3 py-1 rounded-full text-black font-bold text-xs">
-                    {Math.max(70, 99 - i * 7)}% Match
+                    {resumeAnalysis.metadata?.keywordMatchPct != null
+                      ? `${resumeAnalysis.metadata.keywordMatchPct}% Match`
+                      : `${Math.max(70, 99 - i * 7)}% Match`}
                   </div>
                 </div>
                 <div className="p-6">
