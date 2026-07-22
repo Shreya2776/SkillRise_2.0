@@ -1,6 +1,7 @@
 import axios from "axios";
+import { BASE_API } from "../lib/api.js";
 
-const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/admin") : "http://localhost:8000/api/admin";
+const API_URL = `${BASE_API}/admin`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");

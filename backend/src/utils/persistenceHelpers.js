@@ -8,13 +8,22 @@ export const normalizeResumePayload = (payload = {}) => {
     ? payload.suggestions.trim()
     : "";
 
+  const metadata = {
+    ...(payload.metadata || {}),
+    ...(payload.jobTitle ? { jobTitle: payload.jobTitle } : {}),
+    ...(payload.keywordMatchPct != null ? { keywordMatchPct: payload.keywordMatchPct } : {}),
+    ...(Array.isArray(payload.matched) ? { matched: payload.matched } : {}),
+    ...(Array.isArray(payload.missing) ? { missing: payload.missing } : {}),
+    ...(payload.fileName ? { fileName: payload.fileName } : {}),
+  };
+
   return {
     skills,
     score: Number.isFinite(score) ? score : 0,
     suggestions,
     rawData: payload.rawData || payload.raw || {},
-    metadata: payload.metadata || {},
-    title: payload.title || "Resume Analysis",
+    metadata,
+    title: payload.jobTitle || payload.title || "Resume Analysis",
     source: payload.source || "upload",
   };
 };

@@ -1,13 +1,9 @@
 import axios from "axios";
+import { BASE_API } from "../lib/api.js";
 
 export const createProfile = async (data) => {
   const token = localStorage.getItem("token");
-  console.log("TOKEN:", token);
-  const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/profile") : "http://localhost:8000/api/profile";
-  return axios.post(API_URL, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-
+  return axios.post(`${BASE_API}/profile`, data, {
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
