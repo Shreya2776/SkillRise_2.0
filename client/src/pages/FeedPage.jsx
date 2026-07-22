@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, TrendingUp, Compass, Loader2, AlertCircle, Briefcase, Zap, ArrowRight } from "lucide-react";
+import { Sparkles, TrendingUp, Compass, Loader2, AlertCircle, Briefcase, Zap, ArrowRight, FileSearch, CheckCircle, XCircle, ChevronRight } from "lucide-react";
 import BlogCard from "../ngo/components/BlogCard";
 import OpportunityCard from "../components/OpportunityCard";
 
@@ -15,6 +16,25 @@ export default function FeedPage() {
   const [activeTab, setActiveTab] = useState("personalized");
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [resumeAnalysis, setResumeAnalysis] = useState(null);
+  const [resumeLoading, setResumeLoading] = useState(true);
+  const [roadmapData, setRoadmapData] = useState(null);
+  const [profileData, setProfileData] = useState(null);
+
+  useEffect(() => {
+    if (!token) { setResumeLoading(false); return; }
+    const headers = { Authorization: `Bearer ${token}` };
+    Promise.allSettled([
+      axios.get(`${BASE_API}/persistence/resume-analysis`, { headers }),
+      axios.get(`${BASE_API}/persistence/roadmaps`, { headers }),
+      axios.get(`${BASE_API}/profile`, { headers }),
+    ]).then(([resumeRes, roadmapRes, profileRes]) => {
+      if (resumeRes.status === "fulfilled") setResumeAnalysis(resumeRes.value.data?.analyses?.[0] || null);
+      if (roadmapRes.status === "fulfilled") setRoadmapData(roadmapRes.value.data?.roadmaps?.[0] || null);
+      if (profileRes.status === "fulfilled") setProfileData(profileRes.value.data?.profile || null);
+    }).catch(() => {}).finally(() => setResumeLoading(false));
+  }, [token]);
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -121,6 +141,259 @@ export default function FeedPage() {
             </button>
           </div>
         </div>
+      </motion.section>
+
+      {/* Resume Analysis Card */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-8"
+      >
+        {resumeLoading ? (
+          <div className="h-24 rounded-2xl bg-white/[0.02] border border-white/[0.05] animate-pulse" />
+        ) : resumeAnalysis ? (
+          <div className="rounded-2xl border border-indigo-500/20 bg-[#0d0d16] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05]">
+              <div className="flex items-center gap-2">
+                <FileSearch size={16} className="text-indigo-400" />
+                <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Latest Resume Analysis</span>
+              </div>
+              <button onClick={() => navigate("/resume-analyzer")} className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                Analyze Again <ChevronRight size={14} />
+              </button>
+            </div>
+            <div className="p-5 flex flex-col md:flex-row gap-6">
+              {/* ATS Score */}
+              <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="relative w-16 h-16">
+                  <svg width="64" height="64" viewBox="0 0 56 56" className="-rotate-90">
+                    <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                    <circle cx="28" cy="28" r="24" fill="none"
+                      stroke={resumeAnalysis.score > 75 ? "#10b981" : resumeAnalysis.score > 50 ? "#f59e0b" : "#f43f5e"}
+                      strokeWidth="4"
+                      strokeDasharray={`${((resumeAnalysis.score || 0) / 100) * (2 * Math.PI * 24)} ${2 * Math.PI * 24}`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className={`absolute inset-0 flex items-center justify-center text-sm font-black ${
+                    resumeAnalysis.score > 75 ? "text-emerald-400" : resumeAnalysis.score > 50 ? "text-amber-400" : "text-rose-400"
+                  }`}>{resumeAnalysis.score || 0}</span>
+                </div>
+                <div>
+                  <p className="text-white font-black text-lg leading-none">ATS Score</p>
+                  <p className="text-white/30 text-xs mt-1">
+                    {resumeAnalysis.score > 75 ? "Excellent" : resumeAnalysis.score > 50 ? "Needs work" : "Poor"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block w-px bg-white/[0.06]" />
+
+              {/* Skills */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Extracted Skills</p>
+                <div className="flex flex-wrap gap-2">
+                  {resumeAnalysis.skills?.slice(0, 8).map((skill, i) => (
+                    <span key={i} className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold">{skill}</span>
+                  ))}
+                  {resumeAnalysis.skills?.length > 8 && (
+                    <span className="px-2.5 py-1 rounded-lg bg-white/5 text-white/30 text-xs font-bold">+{resumeAnalysis.skills.length - 8} more</span>
+                  )}
+                  {!resumeAnalysis.skills?.length && <span className="text-white/20 text-sm">No skills extracted</span>}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block w-px bg-white/[0.06]" />
+
+              {/* Missing Keywords */}
+              {resumeAnalysis.metadata?.missing?.length > 0 && (
+                <div className="flex-shrink-0 min-w-0 max-w-xs">
+                  <p className="text-[10px] font-bold text-rose-400/60 uppercase tracking-widest mb-2">Missing Keywords</p>
+                  <div className="flex flex-wrap gap-2">
+                    {resumeAnalysis.metadata.missing.slice(0, 5).map((k, i) => (
+                      <span key={i} className="px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-bold">{k}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => navigate("/resume-analyzer")}
+            className="w-full flex items-center justify-between p-5 rounded-2xl border border-dashed border-indigo-500/20 bg-indigo-500/[0.03] hover:border-indigo-500/40 hover:bg-indigo-500/[0.06] transition-all group">
+            <div className="flex items-center gap-3">
+              <FileSearch size={20} className="text-indigo-400" />
+              <div className="text-left">
+                <p className="text-white font-bold text-sm">No resume analyzed yet</p>
+                <p className="text-white/30 text-xs">Upload your resume to get an ATS score and skill extraction</p>
+              </div>
+            </div>
+            <ArrowRight size={18} className="text-indigo-400 group-hover:translate-x-1 transition-transform" />
+          </button>
+        )}
+      </motion.section>
+
+      {/* Roadmap Progress Card */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="mb-8"
+      >
+        {resumeLoading ? (
+          <div className="h-24 rounded-2xl bg-white/[0.02] border border-white/[0.05] animate-pulse" />
+        ) : roadmapData ? (
+          <div className="rounded-2xl border border-amber-500/20 bg-[#0d0d16] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05]">
+              <div className="flex items-center gap-2">
+                <Zap size={16} className="text-amber-400" />
+                <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Active Roadmap</span>
+              </div>
+              <button onClick={() => navigate("/learning-roadmap")} className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                Continue <ChevronRight size={14} />
+              </button>
+            </div>
+            <div className="p-5 flex flex-col md:flex-row gap-6 items-center">
+              {/* Progress ring */}
+              <div className="flex items-center gap-4 flex-shrink-0">
+                {(() => {
+                  const total = roadmapData.roadmap?.length || 0;
+                  const done = roadmapData.completedSteps?.length || 0;
+                  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                  const r = 24, circ = 2 * Math.PI * r;
+                  return (
+                    <>
+                      <div className="relative w-16 h-16">
+                        <svg width="64" height="64" viewBox="0 0 56 56" className="-rotate-90">
+                          <circle cx="28" cy="28" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                          <circle cx="28" cy="28" r={r} fill="none" stroke="#f59e0b" strokeWidth="4"
+                            strokeDasharray={`${(pct / 100) * circ} ${circ}`} strokeLinecap="round" />
+                        </svg>
+                        <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-amber-400">{pct}%</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-black text-base leading-none truncate max-w-[160px]">{roadmapData.targetRole || "Career Path"}</p>
+                        <p className="text-white/30 text-xs mt-1">{done}/{total} steps completed</p>
+                        {roadmapData.duration && <p className="text-white/20 text-xs">{roadmapData.duration}</p>}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              <div className="hidden md:block w-px bg-white/[0.06] self-stretch" />
+
+              {/* Steps preview */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-3">Roadmap Steps</p>
+                <div className="space-y-2">
+                  {(roadmapData.roadmap || []).slice(0, 4).map((step, i) => {
+                    const title = typeof step === "string" ? step : step?.title || step?.month || `Step ${i + 1}`;
+                    const done = roadmapData.completedSteps?.includes(title);
+                    return (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center ${
+                          done ? "bg-emerald-500/20 border border-emerald-500/40" : "bg-white/5 border border-white/10"
+                        }`}>
+                          {done && <CheckCircle size={10} className="text-emerald-400" />}
+                        </div>
+                        <span className={`text-sm truncate ${done ? "text-white/30 line-through" : "text-white/70"}`}>{title}</span>
+                      </div>
+                    );
+                  })}
+                  {(roadmapData.roadmap?.length || 0) > 4 && (
+                    <p className="text-white/20 text-xs pl-7">+{roadmapData.roadmap.length - 4} more steps</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => navigate("/learning-roadmap")}
+            className="w-full flex items-center justify-between p-5 rounded-2xl border border-dashed border-amber-500/20 bg-amber-500/[0.03] hover:border-amber-500/40 hover:bg-amber-500/[0.06] transition-all group">
+            <div className="flex items-center gap-3">
+              <Zap size={20} className="text-amber-400" />
+              <div className="text-left">
+                <p className="text-white font-bold text-sm">No roadmap generated yet</p>
+                <p className="text-white/30 text-xs">Generate a personalized career roadmap to track your progress</p>
+              </div>
+            </div>
+            <ArrowRight size={18} className="text-amber-400 group-hover:translate-x-1 transition-transform" />
+          </button>
+        )}
+      </motion.section>
+
+      {/* Profile Strength Card */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mb-8"
+      >
+        {resumeLoading ? (
+          <div className="h-20 rounded-2xl bg-white/[0.02] border border-white/[0.05] animate-pulse" />
+        ) : (() => {
+          const d = profileData?.data || {};
+          const fields = [
+            { label: "Name", value: d.name, color: "emerald" },
+            { label: "Bio", value: d.bio || d.summary, color: "emerald" },
+            { label: "Skills", value: d.skills?.length > 0, color: "emerald" },
+            { label: "Experience", value: d.experience, color: "amber" },
+            { label: "Education", value: d.education, color: "amber" },
+            { label: "Location", value: d.location, color: "cyan" },
+            { label: "Target Role", value: d.targetRole || d.desiredRole, color: "violet" },
+          ];
+          const filled = fields.filter(f => f.value).length;
+          const pct = Math.round((filled / fields.length) * 100);
+          const r = 20, circ = 2 * Math.PI * r;
+          return (
+            <div className="rounded-2xl border border-emerald-500/20 bg-[#0d0d16] overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05]">
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} className="text-emerald-400" />
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Profile Strength</span>
+                </div>
+                <button onClick={() => navigate("/profile")} className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors">
+                  {pct < 100 ? "Complete Profile" : "View Profile"} <ChevronRight size={14} />
+                </button>
+              </div>
+              <div className="p-5 flex flex-col md:flex-row gap-6 items-center">
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <div className="relative w-14 h-14">
+                    <svg width="56" height="56" viewBox="0 0 48 48" className="-rotate-90">
+                      <circle cx="24" cy="24" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                      <circle cx="24" cy="24" r={r} fill="none" stroke="#10b981" strokeWidth="4"
+                        strokeDasharray={`${(pct / 100) * circ} ${circ}`} strokeLinecap="round" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-emerald-400">{pct}%</span>
+                  </div>
+                  <div>
+                    <p className="text-white font-black text-base">{pct === 100 ? "Complete!" : "Incomplete"}</p>
+                    <p className="text-white/30 text-xs">{filled}/{fields.length} fields filled</p>
+                  </div>
+                </div>
+
+                <div className="hidden md:block w-px bg-white/[0.06] self-stretch" />
+
+                <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {fields.map((f, i) => (
+                    <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold ${
+                      f.value ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-white/[0.03] text-white/20 border border-white/[0.05]"
+                    }`}>
+                      {f.value
+                        ? <CheckCircle size={12} className="flex-shrink-0" />
+                        : <XCircle size={12} className="flex-shrink-0" />}
+                      {f.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </motion.section>
 
       {/* Tabs */}

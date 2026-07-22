@@ -1,16 +1,42 @@
 import axios from "axios";
 
-const API = axios.create({
+const ANALYZER_API = axios.create({
   baseURL: import.meta.env.VITE_ANALYZER_API_URL || "http://localhost:5001/api/analyzer"
 });
 
-export const analyzeResume = async (file) => {
+const MAIN_API = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api"
+});
+
+export const analyzeResume = async (file, jobDescription = "", jobSkills = []) => {
   const formData = new FormData();
   formData.append("resume", file);
+  if (jobDescription) formData.append("jobDescription", jobDescription);
+  if (jobSkills.length > 0) formData.append("jobSkills", JSON.stringify(jobSkills));
 
-  const res = await API.post("/analyze", formData, {
+  const res = await ANALYZER_API.post("/analyze", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+
+  return res.data;
+};
+
+export const saveResumeAnalysis = async (payload) => {
+  const token = localStorage.getItem("token");
+  const res = await MAIN_API.post("/persistence/resume-analysis", payload, {
     headers: {
-      "Content-Type": "multipart/form-data"
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return res.data;
+};
+
+export const getMyResumeAnalyses = async () => {
+  const token = localStorage.getItem("token");
+  const res = await MAIN_API.get("/persistence/resume-analysis", {
+    headers: {
+      Authorization: `Bearer ${token}`
     }
   });
 

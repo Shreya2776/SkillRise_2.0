@@ -1,3 +1,27 @@
+const normalizeText = (value, maxChars = 2000) => {
+  if (typeof value !== "string") return "";
+  return value.replace(/\s+/g, " ").trim().slice(0, maxChars);
+};
+
+const compactProfile = (profile = {}) => {
+  if (!profile || typeof profile !== "object") return {};
+
+  return {
+    name: profile.name || "",
+    targetRole: profile.targetRole || profile.role || "",
+    currentRole: profile.currentRole || "",
+    summary: normalizeText(profile.summary || profile.bio || "", 300),
+    skills: Array.isArray(profile.skills) ? profile.skills.slice(0, 20) : [],
+    experience: normalizeText(profile.experience || "", 250),
+    resume: normalizeText(profile.resume || "", 1000),
+  };
+};
+
+const compactSteps = (steps = []) => {
+  const safeSteps = Array.isArray(steps) ? steps.slice(0, 10) : [];
+  return safeSteps.map((step) => (typeof step === "string" ? step : JSON.stringify(step)).slice(0, 120));
+};
+
 export const buildRoadmapPrompt = ({
   profile,
   resumeText,
@@ -6,17 +30,21 @@ export const buildRoadmapPrompt = ({
   completedSteps = [],
   careerSwitch = false,
 }) => {
+  const compactedProfile = compactProfile(profile);
+  const compactedResume = normalizeText(resumeText, 2500);
+  const compactedCompletedSteps = compactSteps(completedSteps);
+
   return `
 You are an expert AI career mentor.
 
 USER DATA:
-Profile: ${JSON.stringify(profile)}
-Resume: ${resumeText}
+Profile: ${JSON.stringify(compactedProfile)}
+Resume: ${compactedResume}
 
-Target Role: ${targetRole}
-Time Available: ${duration}
+Target Role: ${normalizeText(targetRole, 120)}
+Time Available: ${normalizeText(duration, 80)}
 
-Completed Steps: ${JSON.stringify(completedSteps)}
+Completed Steps: ${JSON.stringify(compactedCompletedSteps)}
 
 Career Switch Mode: ${careerSwitch}
 
@@ -72,17 +100,21 @@ export const buildUpdatePrompt = ({
   duration,
   completedSteps = [],
 }) => {
+  const compactedProfile = compactProfile(profile);
+  const compactedResume = normalizeText(resumeText, 2500);
+  const compactedCompletedSteps = compactSteps(completedSteps);
+
   return `
 You are an expert AI career mentor updating an existing roadmap.
 
 USER DATA:
-Profile: ${JSON.stringify(profile)}
-Resume: ${resumeText}
+Profile: ${JSON.stringify(compactedProfile)}
+Resume: ${compactedResume}
 
-Target Role: ${targetRole}
-Time Available: ${duration}
+Target Role: ${normalizeText(targetRole, 120)}
+Time Available: ${normalizeText(duration, 80)}
 
-COMPLETED STEPS: ${JSON.stringify(completedSteps)}
+COMPLETED STEPS: ${JSON.stringify(compactedCompletedSteps)}
 
 INSTRUCTIONS:
 
@@ -125,16 +157,19 @@ export const buildCareerSwitchPrompt = ({
   targetRole,
   duration,
 }) => {
+  const compactedProfile = compactProfile(profile);
+  const compactedResume = normalizeText(resumeText, 2500);
+
   return `
 You are an expert AI career transition mentor.
 
 USER DATA:
-Profile: ${JSON.stringify(profile)}
-Resume: ${resumeText}
+Profile: ${JSON.stringify(compactedProfile)}
+Resume: ${compactedResume}
 
-CURRENT ROLE: ${currentRole}
-TARGET ROLE: ${targetRole}
-Time Available: ${duration}
+CURRENT ROLE: ${normalizeText(currentRole, 120)}
+TARGET ROLE: ${normalizeText(targetRole, 120)}
+Time Available: ${normalizeText(duration, 80)}
 
 INSTRUCTIONS:
 

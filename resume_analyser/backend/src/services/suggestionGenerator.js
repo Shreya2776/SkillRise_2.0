@@ -1,24 +1,34 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groqClient = axios.create({
+  baseURL: "https://api.groq.com/openai/v1",
+  headers: {
+    Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+});
 
-export async function generateSuggestions(resume, job){
+export async function generateSuggestions(resume, job) {
+  const prompt = `You are an expert ATS resume coach. Analyze the resume below${job ? ` against this job description: "${job}"` : ''} and provide structured improvement suggestions.
 
- const model = genAI.getGenerativeModel({
-  model: "gemma-3-27b-it"
- });
+Return your response in this exact format:
+1. [Section Title]
+[Detailed suggestion]
 
- const prompt = `
- Analyze the resume and suggest improvements to increase ATS score.
+2. [Section Title]
+[Detailed suggestion]
 
- Resume:
- ${resume}
- `;
+Resume:
+${resume}`;
 
- const result = await model.generateContent(prompt);
+  const res = await groqClient.post("/chat/completions", {
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.5,
+  });
 
- return result.response.text();
+  return res.data.choices[0].message.content;
 }

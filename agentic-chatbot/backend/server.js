@@ -18,6 +18,21 @@ app.use(express.json());
 const chatbotRoutes = require('./routes/chatbot.routes');
 app.use('/api/chatbot', chatbotRoutes);
 
+// Chat history preview endpoint
+const ChatThread = require('../agentic-chatbot/models/ChatThread');
+const ChatMessage = require('../agentic-chatbot/models/ChatMessage');
+app.get('/api/chatbot/history/preview', async (req, res) => {
+  try {
+    const userId = req.query.userId || 'anonymous-user';
+    const thread = await ChatThread.findOne({ userId }).sort({ updatedAt: -1 });
+    if (!thread) return res.json({ success: true, preview: null });
+    const messages = await ChatMessage.find({ threadId: thread._id }).sort({ createdAt: -1 }).limit(2);
+    res.json({ success: true, preview: { threadId: thread._id, title: thread.title, messages: messages.reverse(), updatedAt: thread.updatedAt } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
 const PORT = process.env.PORT || 5002;
