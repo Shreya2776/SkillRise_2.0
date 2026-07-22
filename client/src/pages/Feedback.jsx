@@ -4,6 +4,7 @@ import { cn } from '../services/utils';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import axios from 'axios';
 
 const FeedbackActionCard = ({ title, description, icon: Icon, colorClass, borderClass }) => (
   <Card className={cn(
@@ -24,11 +25,41 @@ const Feedback = () => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+
+    if (!message.trim()) return;
+
+    try {
+      setSubmitting(true);
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/persistence/feedback`,
+        {
+          rating,
+          message,
+          category: 'general',
+          page: 'feedback',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsSubmitted(true);
+      setMessage('');
+      setRating(0);
+      setTimeout(() => setIsSubmitted(false), 3000);
+    } catch (error) {
+      console.error('Feedback submission failed:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -101,6 +132,8 @@ const Feedback = () => {
                   <textarea 
                     required
                     rows="6"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     placeholder="Express your technical findings or feature suggestions..."
                     className="w-full bg-[#12121a] border border-white/10 rounded-3xl p-6 text-white placeholder:text-white/20 outline-none focus:border-indigo-500/40 focus:bg-indigo-500/[0.02] focus:shadow-[0_0_20px_rgba(99,102,241,0.05)] transition-all resize-none text-base leading-relaxed"
                   />
@@ -111,10 +144,11 @@ const Feedback = () => {
                 <Button 
                   type="submit"
                   variant="primary"
-                  className="w-full py-6 rounded-3xl uppercase tracking-widest text-xs gap-3 group"
+                  disabled={submitting || !message.trim()}
+                  className="w-full py-6 rounded-3xl uppercase tracking-widest text-xs gap-3 group disabled:opacity-60"
                 >
                   <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  Transmit Module
+                  {submitting ? 'Submitting...' : 'Transmit Module'}
                 </Button>
               </div>
             </form>

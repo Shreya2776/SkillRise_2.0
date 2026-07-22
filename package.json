@@ -1,0 +1,11 @@
+{
+  "name": "skillrise-india",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently --names \"FRONTEND,BACKEND,CHATBOT,RESUME,MOCK\" --prefix-colors \"cyan,green,yellow,magenta,blue\" \"npm run dev --prefix client\" \"npm run dev --prefix backend\" \"npm run dev --prefix agentic-chatbot/backend\" \"npm run dev --prefix resume_analyser/backend\" \"npm run dev --prefix new_mock/server\"",
+    "install:all": "npm install --prefix client && npm install --prefix backend && npm install --prefix agentic-chatbot/backend && npm install --prefix resume_analyser/backend && npm install --prefix new_mock/server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

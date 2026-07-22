@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { generateRoadmap, updateRoadmap, careerSwitchRoadmap } from "../services/roadmapApi";
+import { generateRoadmap, updateRoadmap, careerSwitchRoadmap, saveRoadmapRecord } from "../services/roadmapApi";
 
 export const useRoadmap = () => {
   const [roadmap, setRoadmap] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [lastPayload, setLastPayload] = useState(null);
 
   useEffect(() => {
     const savedRoadmap = localStorage.getItem("roadmap");
@@ -41,7 +42,23 @@ export const useRoadmap = () => {
       }
       
       console.log("✅ Roadmap received:", res.roadmap?.length, "items");
-      setRoadmap(res?.roadmap ?? res ?? []);
+      const nextRoadmap = res?.roadmap ?? res ?? [];
+      setRoadmap(nextRoadmap);
+      setLastPayload({
+        type: "generate",
+        roadmap: nextRoadmap,
+        targetRole: data?.targetRole || data?.profile?.targetRole || "",
+        duration: data?.duration || "",
+        completedSteps: data?.completedSteps || [],
+        summary: res?.summary || "",
+        profileData: data?.profile || {},
+        rawResponse: res,
+        metadata: {
+          generatedAt: new Date().toISOString(),
+          source: "generate",
+        },
+      });
+
       return res;
       
     } catch (err) {
@@ -70,7 +87,22 @@ export const useRoadmap = () => {
       }
       
       console.log("✅ Roadmap updated:", res.roadmap?.length, "items");
-      setRoadmap(res?.roadmap ?? res ?? []);
+      const nextRoadmap = res?.roadmap ?? res ?? [];
+      setRoadmap(nextRoadmap);
+      setLastPayload({
+        type: "update",
+        roadmap: nextRoadmap,
+        targetRole: formData?.get?.("targetRole") || "",
+        duration: formData?.get?.("duration") || "",
+        completedSteps: formData?.get?.("completedSteps") ? JSON.parse(formData.get("completedSteps") || "[]") : [],
+        summary: res?.summary || "",
+        profileData: {},
+        rawResponse: res,
+        metadata: {
+          generatedAt: new Date().toISOString(),
+          source: "update",
+        },
+      });
       return res;
       
     } catch (err) {
@@ -100,7 +132,22 @@ export const useRoadmap = () => {
       }
       
       console.log("✅ Career switch roadmap received:", res.roadmap?.length, "items");
-      setRoadmap(res?.roadmap ?? res ?? []);
+      const nextRoadmap = res?.roadmap ?? res ?? [];
+      setRoadmap(nextRoadmap);
+      setLastPayload({
+        type: "career-switch",
+        roadmap: nextRoadmap,
+        targetRole: formData?.get?.("targetRole") || "",
+        duration: formData?.get?.("duration") || "",
+        completedSteps: [],
+        summary: res?.summary || "",
+        profileData: {},
+        rawResponse: res,
+        metadata: {
+          generatedAt: new Date().toISOString(),
+          source: "career-switch",
+        },
+      });
       return res;
       
     } catch (err) {
@@ -115,9 +162,28 @@ export const useRoadmap = () => {
   };
   const clearRoadmap = () => {
     setRoadmap(null);
+    setLastPayload(null);
     localStorage.removeItem("roadmap");
   };
 
+  const saveCurrentRoadmap = async () => {
+    if (!roadmap || roadmap.length === 0) {
+      return { success: false, message: "No roadmap to save" };
+    }
 
-  return { roadmap, generate, update, careerSwitchGenerate, error, loading, clearRoadmap};
+    try {
+      const payload = {
+        ...(lastPayload || { type: "generate", metadata: { generatedAt: new Date().toISOString(), source: "generate" } }),
+        roadmap,
+      };
+
+      const result = await saveRoadmapRecord(payload);
+      return result;
+    } catch (err) {
+      console.error("Failed to save roadmap:", err);
+      throw err;
+    }
+  };
+
+  return { roadmap, generate, update, careerSwitchGenerate, saveCurrentRoadmap, error, loading, clearRoadmap};
 };

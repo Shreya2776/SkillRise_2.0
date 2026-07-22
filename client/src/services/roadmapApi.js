@@ -1,5 +1,9 @@
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/auth", "/roadmap") : "http://localhost:8000/api/roadmap";
+const BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/auth")
+  .replace(/\/api\/.*$/, "/api");
+const API_URL = `${BASE_URL}/roadmap`;
+const PERSISTENCE_API_URL = `${BASE_URL}/persistence`;
+
 export const generateRoadmap = async (data) => {
   try {
     const res = await axios.post(`${API_URL}/generate`, data, {
@@ -43,4 +47,26 @@ export const careerSwitchRoadmap = async (formData) => {
     }
     throw { error: true, message: err.message };
   }
+};
+
+export const saveRoadmapRecord = async (payload) => {
+  const token = localStorage.getItem("token");
+  const res = await axios.post(`${PERSISTENCE_API_URL}/roadmaps`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const getMyRoadmaps = async () => {
+  const token = localStorage.getItem("token");
+  const res = await axios.get(`${PERSISTENCE_API_URL}/roadmaps`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
 };

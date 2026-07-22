@@ -211,7 +211,7 @@ import { useRoadmap } from "../hooks/useRoadmap";
 import Roadmap from "../components/Roadmap/RoadmapContainer";
 
 export default function RoadmapPage() {
-  const { roadmap, generate, update, careerSwitchGenerate, error, loading, clearRoadmap } = useRoadmap();
+  const { roadmap, generate, update, careerSwitchGenerate, saveCurrentRoadmap, error, loading, clearRoadmap } = useRoadmap();
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
   const [targetRole, setTargetRole] = useState("");
@@ -272,6 +272,21 @@ export default function RoadmapPage() {
       setShowUpdateForm(false);
     } catch (error) {
       console.error("Career switch generation failed:", error);
+    }
+  };
+
+  const [saveStatus, setSaveStatus] = useState("");
+
+  const handleSaveRoadmap = async () => {
+    setSaveStatus("saving");
+    try {
+      await saveCurrentRoadmap();
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus(""), 3000);
+    } catch (error) {
+      console.error("Save roadmap failed:", error);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus(""), 3000);
     }
   };
 
@@ -414,7 +429,28 @@ export default function RoadmapPage() {
         </div>
       )}
 
-      {roadmap && roadmap.length > 0 && <Roadmap data={roadmap} />}
+      {roadmap && roadmap.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={handleSaveRoadmap}
+              disabled={saveStatus === "saving"}
+              className="px-4 py-2 bg-emerald-600 text-white rounded disabled:opacity-50"
+            >
+              {saveStatus === "saving" ? "Saving..." : "Save Roadmap"}
+            </button>
+            <button
+              onClick={clearRoadmap}
+              className="px-4 py-2 bg-slate-700 text-white rounded"
+            >
+              Discard
+            </button>
+            {saveStatus === "saved" && <span className="text-emerald-400 text-sm">✅ Saved successfully!</span>}
+            {saveStatus === "error" && <span className="text-red-400 text-sm">❌ Save failed. Are you logged in?</span>}
+          </div>
+          <Roadmap data={roadmap} />
+        </div>
+      )}
       
       {!loading && !error && (!roadmap || roadmap.length === 0) && (
         <div className="text-gray-400 text-center py-8">
