@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 
 const IconGradient = () => (
@@ -15,30 +15,27 @@ const IconGradient = () => (
 );
 
 const DashboardLayout = ({ children, noSidebar }) => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      // Normalize mouse to a range between -1 and 1
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      setMousePos({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="flex h-screen bg-[#080005] text-white overflow-hidden font-sans relative">
       <IconGradient />
 
       <div className="z-10 flex w-full h-full relative">
-        {!noSidebar && <Sidebar />}
-        
+        {!noSidebar && (
+          <div
+            className="h-full p-3 flex-shrink-0 transition-all duration-300"
+            style={{ width: isCollapsed ? "72px" : "240px" }}
+          >
+            <Sidebar
+              isCollapsed={isCollapsed}
+              toggleSidebar={() => setIsCollapsed(prev => !prev)}
+            />
+          </div>
+        )}
+
         <main className="flex-1 relative overflow-y-auto overflow-x-hidden scrollbar-hide">
-          {/* Page Container */}
-          <div className="w-full h-full flex flex-col pt-6 px-10 lg:px-24">
+          <div className="w-full h-full flex flex-col pt-6 px-6 lg:px-12">
             {children}
           </div>
         </main>

@@ -29,7 +29,6 @@ import ResetPassword from "./pages/ResetPassword";
 
 import ProfileSetup from "./pages/ProfileSetup";
 import ProfileDashboard from "./pages/ProfileDashboard";
-import Layout from "./components/Layout.jsx";
 // New Mock Imports
 import { AuthProvider as MockAuthProvider } from "./new-mock/context/AuthContext";
 import { ToastProvider as MockToastProvider } from "./new-mock/components/ui/Toast";
@@ -63,23 +62,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        {/* Removed duplicate /profile route that used the legacy Layout component */}
-        <Route
-          path="/profile"
-  element={
-    <Layout>
-      <ProfileSetup />
-    </Layout>
-  }
-/>
-        <Route
-  path="/profile/dashboard"
-  element={
-    <Layout>
-      <ProfileDashboard />
-    </Layout>
-  }
-/>
+
         <Route element={<ProtectedRoute allowedRoles={["user", "admin", "ngo"]} />}>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
