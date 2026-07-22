@@ -137,7 +137,25 @@ const isAllowedOrigin = (origin) => {
 
   if (allowedOrigins.includes(origin)) return true;
 
-  return /https:\/\/.*\.vercel\.app$/i.test(origin) || /http:\/\/localhost(:\d+)?$/i.test(origin);
+  try {
+    const { hostname } = new URL(origin);
+
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0") {
+      return true;
+    }
+
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+      return true;
+    }
+
+    if (/^(10|192\.168|172\.(1[6-9]|2\d|3[0-1]))\./.test(hostname)) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return /https:\/\/.*\.vercel\.app$/i.test(origin) || /https:\/\/.*\.onrender\.com$/i.test(origin) || /https:\/\/.*\.netlify\.app$/i.test(origin);
 };
 
 const corsOptions = {
